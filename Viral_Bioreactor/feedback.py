@@ -138,114 +138,114 @@ r = 5e6
 t_vec = [0,400]
 
 
-sol1 = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan,kc,r),t_vec,x0)
-t_vals1,x1,Tin1,D1 = obj_calculator(sol1,nominal_u,control_plan,kc, r, plot=True)
+# sol1 = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan,kc,r),t_vec,x0)
+# t_vals1,x1,Tin1,D1 = obj_calculator(sol1,nominal_u,control_plan,kc, r, plot=True)
 
-fig1, ax1 = plt.subplots(1,3,figsize=(8,3),num=1)
-ax1[0].semilogy(t_vals1,x1[0],label=r"$T$")
-ax1[0].semilogy(t_vals1,x1[1],label=r"$I_{d}$")
-ax1[0].semilogy(t_vals1,x1[2],label=r"$I_{s}$")
-ax1[0].semilogy(t_vals1,x1[3],label=r"$I_{c}$")
-ax1[0].semilogy(t_vals1,x1[4],label=r"$V_{s}$")
-ax1[0].semilogy(t_vals1,x1[5],label=r"$V_{d}$")
-#Inputs
-ax1[1].plot(t_vals1,Tin1)
-ax1[2].plot(t_vals1,D1)
-#Formatting
-ax1[0].set_ylabel(r"Concentration")
-ax1[1].set_ylabel(r"$T_{in}$ (cells/mL)")
-ax1[2].set_ylabel(r"$D$ (1/hr)")
-ax1[0].set_xlabel(r"Time (hr)")
-ax1[1].set_xlabel(r"Time (hr)")
-ax1[2].set_xlabel(r"Time (hr)")
-ax1[0].set_ylim([1e-5,5e10])
-ax1[0].legend(loc="lower right", labelspacing=0.2,ncol=3, columnspacing=0.5, handlelength=0.5)
-fig1.tight_layout()
-plt.savefig("TinT_feedback_eg.png",dpi=300)
-
-
-# #Run contour for Tin and T
-# r_vals = np.linspace(1e6,2e7, 20)
-# kc_vals = np.linspace(-100,-5,20)
-
-# xx,yy = np.meshgrid(kc_vals,r_vals)
-# Tin_T_opt_vals = np.zeros_like(xx)
-
-# counter = 0
-# for idx, f in np.ndenumerate(Tin_T_opt_vals):
-#     kc_ = xx[idx]
-#     r_ = yy[idx]
-#     sol_ = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan,kc_,r_),t_vec,x0)
-#     Tin_T_opt_vals[idx] = obj_calculator(sol_,nominal_u,control_plan,kc_, r_, plot=False)
-#     counter = counter + 1
-#     print(counter)
-
-# fig2 = plt.figure(num=2,figsize=(5,4))
-# plt.pcolormesh(xx,yy,Tin_T_opt_vals,cmap="jet",shading="gouraud")
-# plt.colorbar(label="Objective Function")
-# plt.xlabel(r"$K_{c}$")
-# plt.ylabel(r"$u_{0}$")
-# # plt.yscale("symlog")
-# plt.tight_layout()
-# plt.savefig("TinT_feedback_contour.png",dpi=300)
+# fig1, ax1 = plt.subplots(1,3,figsize=(8,3),num=1)
+# ax1[0].semilogy(t_vals1,x1[0],label=r"$T$")
+# ax1[0].semilogy(t_vals1,x1[1],label=r"$I_{d}$")
+# ax1[0].semilogy(t_vals1,x1[2],label=r"$I_{s}$")
+# ax1[0].semilogy(t_vals1,x1[3],label=r"$I_{c}$")
+# ax1[0].semilogy(t_vals1,x1[4],label=r"$V_{s}$")
+# ax1[0].semilogy(t_vals1,x1[5],label=r"$V_{d}$")
+# #Inputs
+# ax1[1].plot(t_vals1,Tin1)
+# ax1[2].plot(t_vals1,D1)
+# #Formatting
+# ax1[0].set_ylabel(r"Concentration")
+# ax1[1].set_ylabel(r"$T_{in}$ (cells/mL)")
+# ax1[2].set_ylabel(r"$D$ (1/hr)")
+# ax1[0].set_xlabel(r"Time (hr)")
+# ax1[1].set_xlabel(r"Time (hr)")
+# ax1[2].set_xlabel(r"Time (hr)")
+# ax1[0].set_ylim([1e-5,5e10])
+# ax1[0].legend(loc="lower right", labelspacing=0.2,ncol=3, columnspacing=0.5, handlelength=0.5)
+# fig1.tight_layout()
+# plt.savefig("TinT_feedback_eg.png",dpi=300)
 
 
-"""
-Run D and T
-"""
+# # #Run contour for Tin and T
+# # r_vals = np.linspace(1e6,2e7, 20)
+# # kc_vals = np.linspace(-100,-5,20)
+
+# # xx,yy = np.meshgrid(kc_vals,r_vals)
+# # Tin_T_opt_vals = np.zeros_like(xx)
+
+# # counter = 0
+# # for idx, f in np.ndenumerate(Tin_T_opt_vals):
+# #     kc_ = xx[idx]
+# #     r_ = yy[idx]
+# #     sol_ = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan,kc_,r_),t_vec,x0)
+# #     Tin_T_opt_vals[idx] = obj_calculator(sol_,nominal_u,control_plan,kc_, r_, plot=False)
+# #     counter = counter + 1
+# #     print(counter)
+
+# # fig2 = plt.figure(num=2,figsize=(5,4))
+# # plt.pcolormesh(xx,yy,Tin_T_opt_vals,cmap="jet",shading="gouraud")
+# # plt.colorbar(label="Objective Function")
+# # plt.xlabel(r"$K_{c}$")
+# # plt.ylabel(r"$u_{0}$")
+# # # plt.yscale("symlog")
+# # plt.tight_layout()
+# # plt.savefig("TinT_feedback_contour.png",dpi=300)
+
+
+# """
+# Run D and T
+# """
 control_plan1 = ["T", "D"]
-kc1 = -1e-7
-r1 = 0.1
+# kc1 = -1e-7
+# r1 = 0.1
 
-sol2 = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan1,kc1,r1),t_vec,x0)
-t_vals2,x2,Tin2,D2 = obj_calculator(sol2,nominal_u,control_plan1,kc1, r1, plot=True)
+# sol2 = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan1,kc1,r1),t_vec,x0)
+# t_vals2,x2,Tin2,D2 = obj_calculator(sol2,nominal_u,control_plan1,kc1, r1, plot=True)
 
-fig3, ax3 = plt.subplots(1,3,figsize=(8,3),num=3)
-ax3[0].semilogy(t_vals2,x2[0],label=r"$T$")
-ax3[0].semilogy(t_vals2,x2[1],label=r"$I_{d}$")
-ax3[0].semilogy(t_vals2,x2[2],label=r"$I_{s}$")
-ax3[0].semilogy(t_vals2,x2[3],label=r"$I_{c}$")
-ax3[0].semilogy(t_vals2,x2[4],label=r"$V_{s}$")
-ax3[0].semilogy(t_vals2,x2[5],label=r"$V_{d}$")
-#Inputs
-ax3[1].plot(t_vals2,Tin2)
-ax3[2].plot(t_vals2,D2)
-#Formatting
-ax3[0].set_ylabel(r"Concentration")
-ax3[1].set_ylabel(r"$T_{in}$ (cells/mL)")
-ax3[2].set_ylabel(r"$D$ (1/hr)")
-ax3[0].set_xlabel(r"Time (hr)")
-ax3[1].set_xlabel(r"Time (hr)")
-ax3[2].set_xlabel(r"Time (hr)")
-ax3[0].set_ylim([1e-5,5e10])
-ax3[0].legend(loc="lower right", labelspacing=0.2,ncol=3, columnspacing=0.5, handlelength=0.5)
-fig3.tight_layout()
-plt.savefig("DT_feedback_eg.png",dpi=300)
+# fig3, ax3 = plt.subplots(1,3,figsize=(8,3),num=3)
+# ax3[0].semilogy(t_vals2,x2[0],label=r"$T$")
+# ax3[0].semilogy(t_vals2,x2[1],label=r"$I_{d}$")
+# ax3[0].semilogy(t_vals2,x2[2],label=r"$I_{s}$")
+# ax3[0].semilogy(t_vals2,x2[3],label=r"$I_{c}$")
+# ax3[0].semilogy(t_vals2,x2[4],label=r"$V_{s}$")
+# ax3[0].semilogy(t_vals2,x2[5],label=r"$V_{d}$")
+# #Inputs
+# ax3[1].plot(t_vals2,Tin2)
+# ax3[2].plot(t_vals2,D2)
+# #Formatting
+# ax3[0].set_ylabel(r"Concentration")
+# ax3[1].set_ylabel(r"$T_{in}$ (cells/mL)")
+# ax3[2].set_ylabel(r"$D$ (1/hr)")
+# ax3[0].set_xlabel(r"Time (hr)")
+# ax3[1].set_xlabel(r"Time (hr)")
+# ax3[2].set_xlabel(r"Time (hr)")
+# ax3[0].set_ylim([1e-5,5e10])
+# ax3[0].legend(loc="lower right", labelspacing=0.2,ncol=3, columnspacing=0.5, handlelength=0.5)
+# fig3.tight_layout()
+# plt.savefig("DT_feedback_eg.png",dpi=300)
 
 
-# kc_vals = -np.logspace(-5.5,-7.5, 20)
-# r_vals = np.linspace(0.1,0.03,20)
+kc_vals = -np.logspace(-6,-8,25)
+r_vals = np.linspace(0.25,0.03,25)
 
-# xx,yy = np.meshgrid(kc_vals,r_vals)
-# Tin_D_opt_vals = np.zeros_like(xx)
+xx,yy = np.meshgrid(kc_vals,r_vals)
+Tin_D_opt_vals = np.zeros_like(xx)
 
-# counter = 0
-# for idx, f in np.ndenumerate(Tin_D_opt_vals):
-#     kc_ = xx[idx]
-#     r_ = yy[idx]
-#     sol_ = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan1,kc_,r_),t_vec,x0)
-#     Tin_D_opt_vals[idx] = obj_calculator(sol_,nominal_u,control_plan1,kc_, r_, plot=False)
-#     counter = counter + 1
-#     print(counter)
+counter = 0
+for idx, f in np.ndenumerate(Tin_D_opt_vals):
+    kc_ = xx[idx]
+    r_ = yy[idx]
+    sol_ = solve_ivp(lambda t,x: controlled_model(t,x,nominal_u,model_params,control_plan1,kc_,r_),t_vec,x0)
+    Tin_D_opt_vals[idx] = obj_calculator(sol_,nominal_u,control_plan1,kc_, r_, plot=False)
+    counter = counter + 1
+    print(counter)
 
-# fig4 = plt.figure(num=4,figsize=(5,4))
-# plt.pcolormesh(xx,yy,Tin_D_opt_vals,cmap="jet",shading="gouraud")
-# plt.colorbar(label="Objective Function")
-# plt.xlabel(r"$K_{c}$")
-# # plt.xscale("symlog")
-# plt.ylabel(r"$u_{0}$")
-# plt.tight_layout()
-# plt.savefig("DT_feedback_contour.png",dpi=300)
+fig4 = plt.figure(num=4,figsize=(5,4))
+plt.pcolormesh(xx,yy,Tin_D_opt_vals,cmap="jet",shading="gouraud")
+plt.colorbar(label="Objective Function")
+plt.xlabel(r"$K_{c}$")
+plt.xscale("symlog")
+plt.ylabel(r"$u_{0}$")
+plt.tight_layout()
+plt.savefig("DT_feedback_contour.png",dpi=300)
 
 
 
