@@ -37,9 +37,10 @@ def m_td(S_prime,m_td0,K_td,S_l,S_h):
         return m_td0
 
 # define fission rate function
+# UPDATE 06/29/23: caught bug in fission rate def'n causing γ spike in Γ results for N_m = 150 at m = (m_t+m_a)
 @np.vectorize
 def Γ(m,γ,ϵ,m_t,m_d,m_a):
-    if m < m_t+m_a:
+    if m <= m_t+m_a: # used to be m < m_t+m_a, changed to m <= (m_t+m_a)
         return 0.0
     elif (m > m_t+m_a) and (m < m_d):
         return γ*np.exp(-ϵ*(m-m_d)**2)
