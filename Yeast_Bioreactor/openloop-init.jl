@@ -2,7 +2,7 @@
 import Pkg; Pkg.activate(".")
 
 using Distributed
-addprocs(72, topology=:master_worker, exeflags="--project=$(Base.active_project())"); # modify to desired number of codes for parallel computing
+addprocs(72, topology=:master_worker, exeflags="--project=$(Base.active_project())"); # modify to desired number of cores for parallel computing
 
 # include functions from helper_functions.jl
 # https://docs.julialang.org/en/v1/manual/code-loading/
