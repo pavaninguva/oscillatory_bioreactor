@@ -1,43 +1,38 @@
+# open contents of Project.toml (explicitly added packages) and Manifest.toml (recursive dependency packages)
+import Pkg; Pkg.activate(".")
+
+using Distributed
+addprocs(72, topology=:master_worker, exeflags="--project=$(Base.active_project())"); # modify to desired number of codes for parallel computing
+
 # include functions from helper_functions.jl
 # https://docs.julialang.org/en/v1/manual/code-loading/
-include("helper_functions.jl")
+@everywhere include("helper_functions.jl")
 
-# load initialization_dict
-jld_fp_figureplots = pwd() * "/initialization_dict_nominal.jld"
-initialization_dict_nominal = jldopen(jld_fp_figureplots, "r") do file
-    read(file, "initialization_dict_nominal")
+# load list of initialization_dicts
+jld_fp_figureplots = pwd() * "/init_openloop_list.jld"
+init_openloop_list = jldopen(jld_fp_figureplots, "r") do file
+    read(file, "init_openloop_list")
 end
 
-# simulate at nominal conditions
-TF_NOMINAL = 100.0
-D0 = initialization_dict_nominal["D"]
+# simulate at nominal conditions using parallel map
+TF_NOMINAL = 200.0 
 D_lo = 0.0
-D_hi = 1.0
-println("Simulating nominal conditions for dilution rate D=$(D0) 1/h.")
+D_hi = 0.5
+println("Simulating in parallel nominal conditions for dilution rate and substrate feed concentrations.")
 
-# initialize res_dict for open_loop step responses
-openloop_nominal = Dict{String, Vector}(
-            "cell_mass_distributions"=>[],
-            "state_values"=>[],
-            "solution_wall_times"=>[],
-            "D_values"=>[],
-            "Sf_values"=>[],
-            "params"=>[],
-            "solution_timepts"=>[],
-            "controller_params"=>[]
-        )
-
-res_nominal = closed_loop_yeastPBM_v2(
-        initialization_dict_nominal;
-        results_dict = openloop_nominal,
+res_nominal = pmap(
+    (init_dict) -> closed_loop_yeastPBM_v2(
+        init_dict;
         SISO_loop_choice = "none",
         tf = TF_NOMINAL,
         K_c = 0.0,
-        c0 = D0,
+        c0 = init_dict["D"],
         u_lo = D_lo,
         u_hi = D_hi,
         ϵ_rel = 0.0
-    )
+    ),
+    init_openloop_list
+)
 
 println("Done")
 
@@ -53,11 +48,5 @@ jldopen(jld_fp_figureplots, "w") do file
         openloop_nominal_response
         )
 end
-
-# # read
-# openloop_D_step_response = jldopen(jld_fp_figureplots, "r") do file
-#     read(file, "openloop_D_step_response")
-# end
-# display(openloop_D_step_response)
 
 println("Script end.")
