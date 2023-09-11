@@ -8,8 +8,9 @@ openloop_nominal_response = jldopen(jld_fp_figureplots, "r") do file
     read(file, "openloop_nominal_response")
 end
 
-# specific_ind depends on the number of entries in
-SPECIFIC_IND = 1
+# specific_ind depends on the number o# specific_ind depends on the number of entries in openloop_nominal_response 
+# (if nominal D=0.4 1/hr and simulated full parameter sweep D∈[0.0,0.5] 1/hr, then at ind=41)f entries in
+SPECIFIC_IND = 41
 initialization_dict_closedloop = extract_init_cond(
     openloop_nominal_response,
     SPECIFIC_IND

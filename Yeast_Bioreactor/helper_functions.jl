@@ -764,23 +764,52 @@ function compute_G_v2(
 end
 
 
-results_dict = Dict{String, Vector}(
-            "cell_mass_distributions"=>[],
-            "state_values"=>[],
-            "solution_wall_times"=>[],
-            "D_values"=>[],
-            "Sf_values"=>[],
-            "params"=>[],
-            "solution_timepts"=>[],
-            "controller_params"=>[]
-        ),
+# results_dict = Dict{String, Vector}(
+#             "cell_mass_distributions"=>[],
+#             "state_values"=>[],
+#             "solution_wall_times"=>[],
+#             "D_values"=>[],
+#             "Sf_values"=>[],
+#             "params"=>[],
+#             "solution_timepts"=>[],
+#             "controller_params"=>[]
+#         ),
 # extract initialization conditions for a simulation
 # specific_ind refers to a positional entry in the containers of the res_dict added
-function extract_init_cond(res_dict,specific_ind)
+function extract_init_cond(res_dict_list,specific_ind)
 
-    u_0 = res_dict["state_values"][specific_ind][end,:]
-    N_IC = res_dict["cell_mass_distributions"][specific_ind][end,:]
-    p_PBE = res_dict["params"][specific_ind]
+    # create specific endpoint reconstruction dict with appropriate updates to, e.g., Γm0
+    p_PBE = res_dict_list[specific_ind]["params"][1]
+    γ = p_PBE[1]                   # 1/hr, maximum fission rate, when cell m ≥ m_d
+    A = p_PBE[2]                   # 1/g, partition function exponential prefactors (i.e., p(m,m'))
+    S_l = p_PBE[3]                 # g/L, low substrate limit
+    K_t = p_PBE[4]                 # g/g/L, proportionality constant for change in transition mass with substrate levels
+    m_t0 = p_PBE[5]                # g, initial transition mass (at low substrate levels)
+    m_max = p_PBE[6]               # g, maximal cell mass allowed
+    Y = p_PBE[7]                   # g/g, yield coefficient for cell mass to mols substrate
+    K_m = p_PBE[8]                 # g/L, Monod constant for single cell growth rate
+    D = p_PBE[9]                   # 1/h, dilution rate in continuous bioreactor operation
+    ϵ = p_PBE[10]                  # g^{-2}, inverse variance for fission rate when cells are in fissioning state
+    β = p_PBE[11]                  # g^{-2}, another inverse variance for partition function
+    S_h = p_PBE[12]                # g/L, high substrate limit
+    K_d = p_PBE[13]                # g/g/L, proportionality constant for change in critical fissioning mass with substrate levels
+    m_d0 = p_PBE[14]               # g, initial critical fissioning mass (at low substrate levels)
+    m_a = p_PBE[15]                # g, additional mass that mother cell must gain to start fissioning
+    μ_m = p_PBE[16]                # g/h, single cell growth rate in limit of high substrate levels
+    α = p_PBE[17]                  # 1/h, rate constant for delayed adjustment of cell metabolism to substrate levels
+    S_f = p_PBE[18]                # g/L, feed concentration of substrate to continuous bioreactor
+    N_m = p_PBE[19]                # number of grid points in mass domain
+    m_edges = collect(range(0.0,m_max,N_m+1))
+    mc = ((m_edges[2] - m_edges[1]) / 2.0) .+ m_edges[1:end-1]
+    N_IC = res_dict_list[specific_ind]["cell_mass_distributions"][1][end,:]
+    u_res = res_dict_list[specific_ind]["state_values"][1]
+    m_t_test = py"m_td"(u_res[end,2], m_t0, K_t, S_l, S_h)
+    m_d_test = py"m_td"(u_res[end,2], m_d0, K_d, S_l, S_h)
+    Γ0 = py"Γ"(mc,γ,ϵ,m_t_test,m_d_test,m_a)  
+    p_PBE[20] = N_IC
+    p_PBE[21] = py"midpt_trapz"((mc[2] - mc[1]) .* ones(length(mc)), (p_PBE[20] .* Γ0))
+
+    u_0 = res_dict_list[specific_ind]["state_values"][1][end,:]
 
     init_dict = Dict{String,Any}(
         "u_0"=>u_0,
