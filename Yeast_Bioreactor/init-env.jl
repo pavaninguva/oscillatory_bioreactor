@@ -1,5 +1,5 @@
 # open contents of Project.toml (explicitly added packages) and Manifest.toml (recursive dependency packages)
-import Pkg; Pkg.activate(".")
+import Pkg; Pkg.activate("."); Pkg.instantiate()
 
 # # run the following if no Project.toml and Manifest.toml files are present in the current dir
 # # will take a few minutes to run if first time creating full env
